@@ -2,12 +2,13 @@ package main
 
 import (
 	"database/sql"
-	"flag"
+	_ "flag"
 	"fmt"
 	"os"
 	"strings"
 
 	_ "github.com/glebarez/go-sqlite"
+	_ "gitlab.com/golang-utils/config/v2"
 )
 
 /*
@@ -19,7 +20,7 @@ is a shortcut for
 var a = 1
 var b = 2
 ...
-*/
+
 var (
 	// here we define the subcommands and the flags.
 	// if you run the program with
@@ -52,8 +53,61 @@ var (
 
 	deleteAllCmd = flag.NewFlagSet("delete-all", flag.ExitOnError)
 )
+*/
+
+var (
+	cfg = config.New(
+		"addressbook2", // app name
+		0, 0, 1,        // version
+		"this is the new version of the addressbook", // app description
+		config.AsciiArt("addressbook2"),              // optional ascii art
+	)
+
+	// the subcommand 'select'
+	selectCmd = cfg.Command("select", "show all contacts")
+
+	// the subcommand 'insert'
+	insertCmd = cfg.Command("insert", "insert a new contact")
+
+	// the subcommand 'delete'
+	deleteCmd = cfg.Command("delete", "delete a new contact")
+
+	// the subcommand 'update'
+	updateCmd = cfg.Command("update", "update a new contact")
+
+	//flags insert
+
+	// the flag '-lastname' for the subcommand 'insert'
+	insertLastnameArg = insertCmd.String("lastname", "the lastname of the contact")
+
+	// the flag '-firstname' for the subcommand 'insert'
+	insertFirstnameArg = insertCmd.String("firstname", "the firstname of the contact")
+
+	// the flag '-dayofbirth' for the subcommand 'insert'
+	insertDayOfBirthArg = insertCmd.Date("dayofbirth", "the day of birth in the format YYYY-MM-DD")
+
+	//flags delete
+
+	// the flag '-id' for the subcommand 'delete'
+	deleteIdArg = deleteCmd.int("id", "ID of the contact to be deleted")
+
+	//flags update
+
+	// the flag '-id' for the subcommand 'update'
+	updateIdArg = updateCmd.int("id", "ID of the contact to be deleted")
+
+	// the flag '-lastname' for the subcommand 'update'
+	updateLastnameArg = updateCmd.String("lastname", "the lastname of the contact")
+
+	// the flag '-firstname' for the subcommand 'update'
+	updateFirstnameArg = updateCmd.String("firstname", "the firstname of the contact")
+
+	// the flag '-dayofbirth' for the subcommand 'update'
+	updateDayOfBirthArg = updateCmd.Date("dayofbirth", "the day of birth in the format YYYY-MM-DD")
+)
 
 // main is the main entry point of the program
+
 func main() {
 	// we let 'run' do all the work and just handle the error, if we get one
 	err := run()
